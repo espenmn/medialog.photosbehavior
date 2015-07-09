@@ -1,0 +1,6 @@
+
+medialog.photosbehavior.egg-info/*
+
+*.pyc
+
+*.swp
