@@ -1,14 +1,15 @@
 from zope import schema
 from zope.interface import Interface
+from zope.interface import alsoProvides
 from z3c.form import interfaces
 from plone.directives import form
 from plone.formwidget.multifile import MultiFileFieldWidget
-from plone.namedfile.field import NamedFile, NamedImage, NamedBlobImage
+from plone.namedfile.field import NamedBlobImage
 
 
 from collective.z3cform.datagridfield import DataGridFieldFactory 
 from collective.z3cform.datagridfield import DictRow
-#from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import IFormFieldProvider
 
 from z3c.form.browser.multi import MultiWidget
 
@@ -18,7 +19,7 @@ _ = MessageFactory('medialog.photosbehavior')
 
 class IImagePair(form.Schema):
       
-    image = schema.TextLine(
+    image = NamedBlobImage(
         title=_(u"image", default=u"image"),
         required = True,
         description=_(u"help_image",
@@ -42,18 +43,16 @@ class IPhotosBehavior(form.Schema):
         """
     form.fieldset(
         'photos',
+        'images',
         label=_(u'Photos'),
             fields=[
                     'image_pairs',
             ],
     )
     
-    multiField = schema.List(
-        value_type=schema.Int(default=42))
-
     
-    form.widget(files=MultiFileFieldWidget)
-    files = schema.List(title=u'Files',
+    form.widget(images=MultiFileFieldWidget)
+    images = schema.List(title=u'Images',
     value_type=NamedBlobImage())
     
     form.widget(image_pairs=DataGridFieldFactory)
@@ -63,4 +62,4 @@ class IPhotosBehavior(form.Schema):
         value_type=DictRow(schema=IImagePair),
     )
     
-                
+alsoProvides(IPhotosBehavior, IFormFieldProvider)
