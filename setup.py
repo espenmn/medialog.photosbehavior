@@ -33,7 +33,6 @@ setup(name='medialog.photosbehavior',
           'collective.z3cform.datagridfield',
           'plone.directives.form',
           'plone.behavior',
-          'plone.formwidget.multifile'
           # -*- Extra requirements: -*-
       ],
       entry_points="""
