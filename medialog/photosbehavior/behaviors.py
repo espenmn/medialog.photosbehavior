@@ -35,8 +35,7 @@ class IImagePair(form.Schema):
         required=False
     )
     
-
-
+    
 class IPhotosBehavior(form.Schema):
     """Adds settings to medialog.controlpanel
         """
@@ -48,13 +47,11 @@ class IPhotosBehavior(form.Schema):
             ],
     )
     
-    
     form.widget(image_pairs=DataGridFieldFactory)
     image_pairs = schema.List(
         title = _(u"image_pairs", 
             default=u"Photos"),
         value_type=DictRow(schema=IImagePair),
     )
-    
 
 alsoProvides(IPhotosBehavior, IFormFieldProvider)
