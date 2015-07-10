@@ -56,11 +56,5 @@ class IPhotosBehavior(form.Schema):
         value_type=DictRow(schema=IImagePair),
     )
     
-    hostnames = schema.Tuple(
-    title=_('hostnames', 'Hostnames'),
-        description=_('hostnames_description',
-                      u'Hostnames to apply the mobile theme'),
-        value_type=NamedImage(),
-        )
-    
+
 alsoProvides(IPhotosBehavior, IFormFieldProvider)
