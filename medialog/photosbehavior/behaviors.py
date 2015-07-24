@@ -1,16 +1,10 @@
-
-from plone.namedfile.interfaces import INamedBlobImageField
-from plone.namedfile.interfaces import INamedFileField
-from plone.namedfile.interfaces import INamedImageField
-from plone.namedfile import NamedFile, NamedImage
-
-
 from zope import schema
 from zope.interface import Interface
 from zope.interface import alsoProvides
 from z3c.form import interfaces
 from plone.directives import form
-from plone.namedfile.field import NamedImage
+from plone.namedfile import field as namedfile
+from plone.app.contenttypes.behaviors import leadimage.py
 
 
 from collective.z3cform.datagridfield import DataGridFieldFactory 
@@ -25,11 +19,9 @@ _ = MessageFactory('medialog.photosbehavior')
 
 class IImagePair(form.Schema):
       
-    image = NamedImage(
-        title=_(u"image", default=u"image"),
-        required = False,
-        description=_(u"help_image",
-            default=u"Choose an image")
+    image = namedfile.NamedBlobImage(
+    title = _(u'image', 'Image'),
+        required=False,
     )
     
     title = schema.TextLine(
@@ -42,7 +34,8 @@ class IImagePair(form.Schema):
         required=False
     )
     
-    
+ 
+ 
 class IPhotosBehavior(form.Schema):
     """Adds settings to medialog.controlpanel
         """
@@ -54,14 +47,14 @@ class IPhotosBehavior(form.Schema):
             ],
     )
     
-#    form.widget(image_pairs=DataGridFieldFactory)
-    image_pairs = schema.Tuple(
+    form.widget(image_pairs=DataGridFieldFactory)
+    image_pairs = schema.List(
         title = _(u"image_pairs", 
             default=u"Photos"),
-        value_type=IImagePair,
+        value_type=DictRow(schema=IImagePair),
     )
-
-alsoProvides(IPhotosBehavior, IFormFieldProvider)
+    
     
 
- 
+
+alsoProvides(IPhotosBehavior, IFormFieldProvider)
