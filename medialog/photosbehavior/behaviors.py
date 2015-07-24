@@ -1,3 +1,10 @@
+
+from plone.namedfile.interfaces import INamedBlobImageField
+from plone.namedfile.interfaces import INamedFileField
+from plone.namedfile.interfaces import INamedImageField
+from plone.namedfile import NamedFile, NamedImage
+
+
 from zope import schema
 from zope.interface import Interface
 from zope.interface import alsoProvides
@@ -47,11 +54,14 @@ class IPhotosBehavior(form.Schema):
             ],
     )
     
-    form.widget(image_pairs=DataGridFieldFactory)
-    image_pairs = schema.List(
+#    form.widget(image_pairs=DataGridFieldFactory)
+    image_pairs = schema.Tuple(
         title = _(u"image_pairs", 
             default=u"Photos"),
-        value_type=DictRow(schema=IImagePair),
+        value_type=IImagePair,
     )
 
 alsoProvides(IPhotosBehavior, IFormFieldProvider)
+    
+
+ 
