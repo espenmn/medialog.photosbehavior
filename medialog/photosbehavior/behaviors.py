@@ -76,7 +76,7 @@ class PhotosBehavior(object):
         self.context = context
 
 
-
+#https://github.com/collective/collective.z3cform.datagridfield/issues/31
 
 try:
     from zope.globalrequest import getRequest
