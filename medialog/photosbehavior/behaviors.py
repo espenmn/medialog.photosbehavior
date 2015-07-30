@@ -1,23 +1,27 @@
-from zope import schema
-from zope.interface import Interface
-from zope.interface import alsoProvides
-from z3c.form import interfaces
-from plone.directives import form
-from plone.namedfile import field as namedfile
-
-#do I need this ?
-from plone.supermodel import model
+# -*- coding: utf-8 -*-
+from plone.app.contenttypes import _
+from plone.autoform.interfaces import IFormFieldProvider
 from plone.dexterity.interfaces import IDexterityContent
-
+from plone.namedfile import field as namedfile
+from plone.supermodel import model
+from zope import schema
+from zope.component import adapter
+from zope.interface import implementer
+from zope.interface import provider
+ 
 from collective.z3cform.datagridfield import DataGridFieldFactory 
 from collective.z3cform.datagridfield import DictRow
-from plone.autoform.interfaces import IFormFieldProvider
-
-#from z3c.form.browser.multi import MultiWidget
 
 from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('medialog.photosbehavior')
 
+image = namedfile.NamedBlobImage(
+        title=_(u"Photo"),
+        description=u"",
+        required=False,
+    )
+
+@provider(IFormFieldProvider)
 class IPhoto(model.Schema):
 
     image = namedfile.NamedBlobImage(
@@ -38,13 +42,14 @@ class IPhoto(model.Schema):
         required=False,
     )
 
-alsoProvides(IPhoto, IFormFieldProvider)
-
- 
-class IPhotosBehavior(form.Schema):
+@provider(IFormFieldProvider)
+class IPhotosBehavior(model.Schema):
     """Adds settings to medialog.controlpanel
+    
+    def image():
+    
         """
-    form.fieldset(
+    model.fieldset(
         'photos',
         label=_(u'Photos'),
             fields=[
@@ -52,12 +57,51 @@ class IPhotosBehavior(form.Schema):
             ],
     )
     
-    form.widget(image_pairs=DataGridFieldFactory)
-    image_pairs = schema.List(
+    image_pairs = schema.Tuple(
         title = _(u"image_pairs", 
             default=u"Photos"),
-        value_type=DictRow(schema=IPhoto),
+        value_type= namedfile.NamedBlobImage(
+        title=_(u"Photo"),
+        description=u"",
+        required=False,
+    )
     )
     
 
-alsoProvides(IPhotosBehavior, IFormFieldProvider)
+@implementer(IPhotosBehavior)
+@adapter(IDexterityContent)
+class PhotosBehavior(object):
+
+    def __init__(self, context):
+        self.context = context
+
+
+
+
+try:
+    from zope.globalrequest import getRequest
+    getRequest  # pyflakes
+except ImportError:
+    # Fake it
+    getRequest = object
+
+
+def closest_content(context=None):
+    """Try to find a usable context, with increasing agression"""
+    # Normally, we should be given a useful context (e.g the page)
+    c = context
+    c = _valid_context(c)
+    if c is not None:
+        return c
+    # Subforms (e.g. DataGridField) may not have a context set, find out
+    # what page is being published
+    c = getattr(getRequest(), 'PUBLISHED', None)
+    c = _valid_context(c)
+    if c is not None:
+        return c
+    # During widget traversal nothing is being published yet, use getSite()
+    c = getSite()
+    c = _valid_context(c)
+    if c is not None:
+        return c
+    raise ValueError('Cannot find suitable context to bind to source')
