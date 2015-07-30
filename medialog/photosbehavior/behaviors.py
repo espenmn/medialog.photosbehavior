@@ -15,11 +15,15 @@ from collective.z3cform.datagridfield import DictRow
 from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('medialog.photosbehavior')
 
-image = namedfile.NamedBlobImage(
-        title=_(u"Photo"),
-        description=u"",
-        required=False,
-    )
+#https://github.com/collective/collective.z3cform.datagridfield/issues/31
+
+try:
+    from zope.globalrequest import getRequest
+    getRequest  # pyflakes
+except ImportError:
+    # Fake it
+    getRequest = object
+
 
 @provider(IFormFieldProvider)
 class IPhoto(model.Schema):
@@ -60,11 +64,7 @@ class IPhotosBehavior(model.Schema):
     image_pairs = schema.Tuple(
         title = _(u"image_pairs", 
             default=u"Photos"),
-        value_type= namedfile.NamedBlobImage(
-        title=_(u"Photo"),
-        description=u"",
-        required=False,
-    )
+        value_type= DictRow(schema=IPhoto)
     )
     
 
@@ -75,33 +75,27 @@ class PhotosBehavior(object):
     def __init__(self, context):
         self.context = context
 
-
-#https://github.com/collective/collective.z3cform.datagridfield/issues/31
-
-try:
-    from zope.globalrequest import getRequest
-    getRequest  # pyflakes
-except ImportError:
-    # Fake it
-    getRequest = object
-
-
-def closest_content(context=None):
-    """Try to find a usable context, with increasing agression"""
-    # Normally, we should be given a useful context (e.g the page)
-    c = context
-    c = _valid_context(c)
-    if c is not None:
-        return c
-    # Subforms (e.g. DataGridField) may not have a context set, find out
-    # what page is being published
-    c = getattr(getRequest(), 'PUBLISHED', None)
-    c = _valid_context(c)
-    if c is not None:
-        return c
-    # During widget traversal nothing is being published yet, use getSite()
-    c = getSite()
-    c = _valid_context(c)
-    if c is not None:
-        return c
-    raise ValueError('Cannot find suitable context to bind to source')
+    #code from contentreewidget utils
+    def closest_content(context=None):
+        """Try to find a usable context, with increasing agression"""
+        # Normally, we should be given a useful context (e.g the page)
+        c = context
+        c = _valid_context(c)
+        if c is not None:
+            return c
+        # Subforms (e.g. DataGridField) may not have a context set, find out
+        # what page is being published
+        c = getattr(getRequest(), 'PUBLISHED', None)
+        c = _valid_context(c)
+        if c is not None:
+            return c
+        # During widget traversal nothing is being published yet, use getSite()
+        c = getSite()
+        c = _valid_context(c)
+        if c is not None:
+            return c
+        raise ValueError('Cannot find suitable context to bind to source')
+        
+    
+    def context(self):
+        context = self.request.PARENTS[0]
