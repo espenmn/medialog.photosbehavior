@@ -1,0 +1,33 @@
+<tal:slider tal:condition="context/photos">
+	<div id="slider" class="slider"
+						tal:define="url python: context.absolute_url();
+						filename python: context.image_pairs[0]['photo'].filename">
+
+						<div tal:repeat="blobimage context/image_pairs">
+								<img src="${url}/@@view/++widget++form.widgets.IPhotosBehavior.image_pairs.${repeat/blobimage/index}.widgets.photo/@@download/${filename}" />
+								<h1>${blobimage/title}</h1>
+								<p class="documentDescription">${blobimage/description}</p>
+						</div>
+
+						<div tal:repeat="photo context/photos">
+								${photo/filename}
+								<img src="${url}/@@view/++widget++form.widgets.IPhotosBehavior.image_pairs.${repeat/photo/index}.widgets.photo/@@download/${photo/filename}" />
+								<h1>${photo/filename}</h1>
+						</div>
+		</div>
+<script src="++theme++multitheme/javascript/responsiveslides.min.js"></script>
+<script src="++theme++multitheme/css/responsiveslides.css"></script>
+<script>
+ $(function () {
+	$("#slider").responsiveSlides({
+		prevText: "<",
+		nextText: ">",
+	});
+ });
+ $(window).resize(function(){
+	 // Setting the heigth of the slides
+	 $('#slider').height($('#slider').width()*50/100);
+ }).resize();
+</script>
+
+</tal:slider>
