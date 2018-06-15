@@ -1,17 +1,16 @@
 <tal:slider tal:condition="context/photos">
 	<div id="slider" class="slider"
 						tal:define="url python: context.absolute_url();
-						filename python: context.image_pairs[0]['photo'].filename">
+						photo python: context.image_pairs[0]['photo']">
 
-						<div tal:repeat="blobimage context/image_pairs">
-								<img src="${url}/@@view/++widget++form.widgets.IPhotosBehavior.image_pairs.${repeat/blobimage/index}.widgets.photo/@@download/${filename}" />
+						<div tal:repeat="blobimage context/image_pairs" tal:condition="photo" >
+								<img src="${url}/@@view/++widget++form.widgets.IPhotosBehavior.image_pairs.${repeat/blobimage/index}.widgets.photo/@@download/${photo/filename}" />
 								<h1>${blobimage/title}</h1>
 								<p class="documentDescription">${blobimage/description}</p>
 						</div>
 
 						<div tal:repeat="photo context/photos">
-								${photo/filename}
-								<img src="${url}/@@view/++widget++form.widgets.IPhotosBehavior.image_pairs.${repeat/photo/index}.widgets.photo/@@download/${photo/filename}" />
+								<img src="${url}/view/++widget++form.widgets.IPhotosBehavior.photos/@@download/${repeat/photo/index}">
 								<h1>${photo/filename}</h1>
 						</div>
 		</div>
