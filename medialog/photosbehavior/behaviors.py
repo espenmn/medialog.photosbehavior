@@ -39,10 +39,10 @@ class IImagePair(model.Schema):
     )
 
 @provider(IFormFieldProvider)
-class IPhotosBehavior(model.Schema):
+class IPhotosBehavior(form.Schema):
     """Adds settings to medialog.controlpanel
         """
-    model.fieldset(
+    form.fieldset(
         'photos',
         label=_(u'Photos'),
             fields=[
