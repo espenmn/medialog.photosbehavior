@@ -30,9 +30,9 @@ setup(name='medialog.photosbehavior',
       zip_safe=False,
       install_requires=[
           'plone.dexterity',
-          'collective.z3cform.datagridfield',
-          'plone.directives.form',
           'plone.behavior',
+          'collective.z3cform.datagridfield',
+          'plone.formwidget.multifile'
           # -*- Extra requirements: -*-
       ],
       entry_points="""

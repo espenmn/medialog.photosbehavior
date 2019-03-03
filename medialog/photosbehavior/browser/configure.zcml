@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="medialog.photosbehavior">
+
+  <browser:viewlet
+       for="medialog.photosbehavior.behaviors.IPhotosBehavior"
+       name="photosviewlet"
+       manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
+       class=".viewlets.PhotosViewlet"
+       permission="zope2.View"
+       />
+
+  <browser:resource name="responsive-slides.min.js" file="files/responsiveslides.min.js" />
+  <browser:resource name="responsive-slides.css" file="files/responsiveslides.css" />
+
+</configure>

@@ -1,44 +1,38 @@
-# -*- coding: utf-8 -*-
 from zope import schema
-from plone.app.contenttypes import _
-from plone.autoform.interfaces import IFormFieldProvider
-from plone.dexterity.interfaces import IDexterityContent
-from plone.namedfile import field as namedfile
+from zope.interface import Interface
+from zope.interface import alsoProvides
+from z3c.form import interfaces
 from plone.namedfile.field import NamedImage
+from collective.z3cform.datagridfield import DataGridFieldFactory 
+from collective.z3cform.datagridfield import DictRow
+from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
 from plone.autoform.directives import widget
-from zope.interface import provider
-
-from plone.formwidget.multifile import MultiFileFieldWidget
 
 from zope.i18nmessageid import MessageFactory
 _ = MessageFactory('medialog.photosbehavior')
 
-from collective.z3cform.datagridfield import DataGridFieldFactory
-from collective.z3cform.datagridfield import DictRow
-
-from z3c.form.browser.multi import MultiWidget
 
 class IImagePair(model.Schema):
-
-    photo = NamedImage(
+      
+    image = NamedImage(
         title=_(u"image", default=u"image"),
         required = False,
         description=_(u"help_image",
             default=u"Choose an image")
     )
-
+    
     title = schema.TextLine(
         title=_(u'image_title', 'Image Title'),
         required=False
     )
-
+    
     description = schema.TextLine(
         title=_(u'image_description', 'Image Description'),
         required=False
     )
-
-@provider(IFormFieldProvider)
+    
+    
 class IPhotosBehavior(model.Schema):
     """Adds settings to medialog.controlpanel
         """
@@ -49,19 +43,12 @@ class IPhotosBehavior(model.Schema):
                     'image_pairs',
             ],
     )
-
+    
     widget(image_pairs=DataGridFieldFactory)
     image_pairs = schema.List(
-        title = _(u"image_pairs",
+        title = _(u"image_pairs", 
             default=u"Photos"),
         value_type=DictRow(schema=IImagePair),
     )
 
-    photos = schema.List(
-        title = _(u"Images"),
-        value_type=namedfile.NamedBlobImage(
-        title = _(u"Image"),
-        required=False)
-    )
-
-    widget(photos=MultiFileFieldWidget)
+alsoProvides(IPhotosBehavior, IFormFieldProvider)
